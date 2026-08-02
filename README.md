@@ -1,34 +1,50 @@
-# 02 · NYC Taxi Batch Data Pipeline
+<div align="center">
 
-> **Target role: Data Engineer**
-> **Resume-ready label:** *"End-to-end batch ETL — Apache Airflow + dbt + BigQuery: raw → staging → marts (2.96M rows), fully automated with dashboards"*
+# NYC Taxi Data Pipeline
 
-The exact stack accepted data-engineer candidates used. Airflow orchestrates a daily ingest of NYC taxi trip data, dbt transforms it through staging/intermediate/marts layers, and results land in BigQuery for BI dashboards. Also runs fully local (DuckDB) so you can demo it without cloud credentials.
+**End-to-end batch ETL — Airflow + dbt + BigQuery, raw → staging → marts.**
 
-## What it covers (hiring gaps filled)
+Apache Airflow · dbt · BigQuery · DuckDB · Docker
 
-- Apache Airflow DAG orchestration — **not in your current 3 projects**
-- dbt layered modeling (staging → intermediate → marts) + data-quality tests
-- BigQuery warehouse (cloud path) **or** DuckDB (local path)
-- Idempotent backfills, scheduling, monitoring
+[![CI](https://github.com/adityashirsatrao007/nyc-taxi-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/adityashirsatrao007/nyc-taxi-data-pipeline/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![dbt](https://img.shields.io/badge/dbt-v1.8-FF694B?logo=dbt&logoColor=white)](https://www.getdbt.com/)
+[![Apache Airflow](https://img.shields.io/badge/Apache%20Airflow-017CEE?logo=apacheairflow&logoColor=white)](https://airflow.apache.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Resume bullet (copy/adapt)
+</div>
 
-> **NYC Taxi Data Pipeline** · *Apache Airflow, dbt, BigQuery, DuckDB*
-> - Built an end-to-end batch ETL pipeline processing **2.96M rows/day** (NYC taxi data) orchestrated on Apache Airflow
-> - Modeled transformations in dbt across staging/intermediate/marts layers with **15+ automated data-quality tests**
-> - Cut query latency ~40% via partitioning and clustering in BigQuery; enabled 4+ BI dashboards
-> - Automated daily scheduling with retries and backfill support, maintaining **99.9% pipeline success rate**
+A daily batch ETL pipeline over NYC taxi trip data. **Airflow** orchestrates ingestion, **dbt** models the data through staging → intermediate → marts layers with automated data-quality tests, and results land in **BigQuery** for BI dashboards.
+
+Runs fully locally with **DuckDB** (no cloud credentials required), so the pipeline can be demoed end-to-end with one command.
+
+## Features
+
+- **Orchestration** — Apache Airflow DAG with scheduled daily runs, retries, and idempotent backfills
+- **Layered dbt modeling** — staging → intermediate → marts, one model per source
+- **Data-quality tests** — not-null, uniqueness, relationships, accepted values
+- **Dual warehouse support** — BigQuery (cloud) or DuckDB (local), switch via `profiles.yml`
+- **BI ready** — marts feed Looker Studio / Metabase dashboards
+
+## Architecture
+
+```
+NYC Taxi CSV ──▶ Airflow DAG
+                    ├─ download ──▶ /tmp/raw
+                    ├─ ingest   ──▶ warehouse (staging seed)
+                    └─ trigger dbt ─▶ staging → intermediate → marts
+                                       └──▶ Looker Studio / Metabase dashboards
+```
 
 ## Quick start (local, no cloud needed)
 
 ```bash
-cd 02-nyc-taxi-data-pipeline
+cd nyc-taxi-data-pipeline
 
 # Option A — everything via Docker Compose (Airflow + dbt + DuckDB)
 docker compose up --build
 
-# Option B — just the dbt project against DuckDB (fastest to demo)
+# Option B — dbt project against DuckDB (fastest to demo)
 python -m venv .venv && source .venv/bin/activate
 pip install dbt-duckdb duckdb
 cd dbt/nyc_taxi
@@ -45,30 +61,25 @@ dbt seed --target bigquery
 dbt build --target bigquery
 ```
 
-Set these in your `profiles.yml` (or env): `BIGQUERY_PROJECT`, `GOOGLE_APPLICATION_CREDENTIALS`.
-
-## Architecture
-
-```
-NYC Taxi CSV ──▶ Airflow DAG
-                    ├─ download  ──▶ /tmp/raw
-                    ├─ ingest    ──▶ warehouse (staging seed)
-                    └─ trigger dbt ─▶ staging → intermediate → marts
-                                       └──▶ Looker Studio / Metabase dashboards
-```
+Set `BIGQUERY_PROJECT` and `GOOGLE_APPLICATION_CREDENTIALS` in your environment (or `profiles.yml`).
 
 ## dbt layer structure
 
 | Layer | Purpose |
 |-------|---------|
-| `staging/` | Clean, type, rename — one model per source |
+| `staging/` | Clean, type, and rename source data — one model per source |
 | `marts/` | Business-facing aggregates (daily trips, revenue, top routes) |
 | `tests/` | Not-null, uniqueness, relationships, accepted values |
 
-## Role fit
+## Project layout
 
-| Role | Fit |
-|------|-----|
-| Data Engineer | Primary target — Airflow, dbt, warehousing, orchestration |
-| Analytics Engineer | Strong — modeling, data quality, BI enablement |
-| ML Engineer | Secondary — the underlying SQL/warehousing transfers |
+```
+dags/            Apache Airflow DAG (ingest + dbt trigger)
+dbt/nyc_taxi/    dbt project — models, seeds, profiles, tests
+scripts/         load helpers
+docker-compose.yml  full local stack
+```
+
+## License
+
+[MIT](LICENSE)
