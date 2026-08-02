@@ -1,0 +1,38 @@
+services:
+  airflow:
+    image: apache/airflow:2.9.1
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - DUCKDB_PATH=/tmp/nyc_taxi/warehouse.duckdb
+      - DBT_TARGET=duckdb
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./scripts:/opt/airflow/scripts
+      - ./dbt:/opt/dbt
+      - ./data:/tmp/nyc_taxi
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    command: >
+      bash -c "
+        pip install --quiet duckdb dbt-duckdb dbt-bigquery &&
+        airflow db migrate &&
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com --skip-filename 2>/dev/null || true &&
+        airflow webserver &
+        airflow scheduler
+      "
+
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

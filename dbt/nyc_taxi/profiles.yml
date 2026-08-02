@@ -1,0 +1,16 @@
+nyc_taxi:
+  outputs:
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '/tmp/nyc_taxi/warehouse.duckdb') }}"
+      threads: 4
+    bigquery:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('BIGQUERY_PROJECT') }}"
+      dataset: nyc_taxi
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+      threads: 4
+      location: US
+      priority: interactive
+  target: "{{ env_var('DBT_TARGET', 'duckdb') }}"

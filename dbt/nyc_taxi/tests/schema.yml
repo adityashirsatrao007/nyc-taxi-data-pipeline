@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: stg_trips
+    description: "Cleaned and typed NYC taxi trips."
+    columns:
+      - name: pickup_datetime
+        tests:
+          - not_null
+      - name: trip_distance
+        tests:
+          - dbt_utils.accepted_range
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null
+      - name: pickup_location_id
+        tests:
+          - not_null
+
+  - name: daily_trip_summary
+    description: "Daily aggregated trip stats."
+    columns:
+      - name: trip_date
+        tests:
+          - not_null
+          - unique
+      - name: trip_count
+        tests:
+          - not_null
+          - dbt_utils.accepted_range
