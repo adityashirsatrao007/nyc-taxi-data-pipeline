@@ -4,6 +4,8 @@
 
 **End-to-end batch ETL — Airflow + dbt + BigQuery, raw → staging → marts.**
 
+> **⚡ Impact:** production run-ready on **2.96M trips/day** · Airflow-orchestrated dbt marts (raw → staging → marts) · data-quality tests on every load
+
 Apache Airflow · dbt · BigQuery · DuckDB · Docker
 
 [![CI](https://github.com/adityashirsatrao007/nyc-taxi-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/adityashirsatrao007/nyc-taxi-data-pipeline/actions/workflows/ci.yml)
