@@ -85,3 +85,14 @@ docker-compose.yml  full local stack
 ## License
 
 [MIT](LICENSE)
+
+## Contributing
+
+Contributions are welcome! For significant changes, please open an issue first to discuss the proposal.
+
+1. Fork the repository and create a feature branch.
+2. Make your changes (add tests where applicable).
+3. Ensure the CI workflow passes.
+4. Open a pull request with a clear description.
+
+This project is released under the MIT License — see [`LICENSE`](LICENSE).
