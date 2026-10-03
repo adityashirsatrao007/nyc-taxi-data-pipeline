@@ -4,7 +4,7 @@
 
 **End-to-end batch ETL — Airflow + dbt + BigQuery, raw → staging → marts.**
 
-> **⚡ Impact:** production run-ready on **2.96M trips/day** · Airflow-orchestrated dbt marts (raw → staging → marts) · data-quality tests on every load
+> **⚡ Impact:** daily batch ETL — Airflow-orchestrated dbt marts (raw → staging → marts) · 9 dbt data-quality tests on every load
 
 Apache Airflow · dbt · BigQuery · DuckDB · Docker
 
